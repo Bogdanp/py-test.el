@@ -47,18 +47,18 @@ This is a property list with the following properties:
 `name`
   The project's name.
 
-`basedir`
+`base-directory`
   The project's base directory.
 
 `python-command`
   The Python command to use when running the runner. May be nil if the
-  runner is executable.
+  test-runner is executable.
 
-`runner`
+`test-runner`
   The path to the test runner to use. This can be nil, in which case
   py.test will be used.
 
-`cwd`
+`working-directory`
   The directory in which to run the tests. This can be nil, in which
   case the current buffer's CWD will be used.")
 
@@ -78,23 +78,23 @@ If the project already exists, update it."
     (push args py-test/*projects*)))
 
 (defun py-test/project-for-filename (filename)
-  "Find the first project whose basedir is a parent of FILENAME."
+  "Find the first project whose base-directory is a parent of FILENAME."
   (let ((finder
          (lambda (project)
-           (string-match (concat "^" (plist-get project :basedir))
+           (string-match (concat "^" (plist-get project :base-directory))
                          filename))))
     (-first finder py-test/*projects*)))
 
 (defun py-test/run-project (project &rest args)
   "'Compiles' the runner for PROJECT with ARGS."
   (let* ((project-python-command (plist-get project :python-command))
-         (project-runner (plist-get project :runner))
-         (project-cwd (plist-get project :cwd))
+         (project-test-runner (plist-get project :test-runner))
+         (project-working-directory (plist-get project :working-directory))
 
          (python-command (or project-python-command ""))
-         (runner (or project-runner "py.test"))
-         (command (list python-command runner))
-         (default-directory (or project-cwd default-directory)))
+         (test-runner (or project-test-runner "py.test"))
+         (command (list python-command test-runner))
+         (default-directory (or project-working-directory default-directory)))
 
     (compile (string-join (append command args) " "))))
 

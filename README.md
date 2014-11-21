@@ -22,9 +22,10 @@ Define a project.
 ```lisp
 (py-test/define-project
  :name "My Project"
- :basedir (expand-file-name "~/sandbox/my-project-home/")
- :runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
- :cwd (expand-file-name "~/sandbox/my-project-home/tests/"))
+ :base-directory (expand-file-name "~/sandbox/my-project-home/")
+ :python-command "python"
+ :test-runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
+ :working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
 ```
 
 You're done! You can now use `M-x py-test/run-file RET` and
