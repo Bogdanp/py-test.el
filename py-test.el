@@ -58,6 +58,10 @@ This is a property list with the following properties:
   The path to the test runner to use. This can be nil, in which case
   py.test will be used.
 
+`test-runner-arguments`
+  A list of command-line arguments that should always get passed to the
+  runner.
+
 `working-directory`
   The directory in which to run the tests. This can be nil, in which
   case the current buffer's CWD will be used.")
@@ -89,6 +93,7 @@ If the project already exists, update it."
   "'Compiles' the runner for PROJECT with ARGS."
   (let* ((project-python-command (plist-get project :python-command))
          (project-test-runner (plist-get project :test-runner))
+         (project-test-runner-arguments (plist-get project :test-runner-arguments))
          (project-working-directory (plist-get project :working-directory))
 
          (python-command (or project-python-command ""))
@@ -96,7 +101,7 @@ If the project already exists, update it."
          (command (list python-command test-runner))
          (default-directory (or project-working-directory default-directory)))
 
-    (compile (string-join (append command args) " "))))
+    (compile (string-join (append command project-test-runner-arguments args) " "))))
 
 (defun py-test/run-folder ()
   "Run all the tests in the current folder."
