@@ -1,4 +1,4 @@
-;;; py-test.el --- A test runner for Python code
+;;; py-test.el --- A test runner for Python code.
 
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
@@ -213,4 +213,4 @@ If the project already exists, update it."
 
 (provide 'py-test)
 
-;;; py-test.el ends here
+;;; py-test.el ends here.
