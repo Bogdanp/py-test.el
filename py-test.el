@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
 ;; Author: Bogdan Paul Popa <popa.bogdanp@gmail.com>
-;; Version: 0.3.0
+;; Version: 0.3.1
 ;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24"))
 ;; Keywords: python testing py.test
 ;; URL: https://github.com/Bogdanp/py-test.el
@@ -105,7 +105,6 @@ If the project already exists, update it."
 (defun py-test/find-outer-test ()
   "Searches backward for the current test."
   (save-excursion
-    (end-of-line)
     (re-search-backward "^\\( *\\)\\(class\\|def\\) +\\([Tt]est[^(]*\\)" nil t)
     (let* ((indentation (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
            (abstraction (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
