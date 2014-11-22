@@ -42,11 +42,20 @@
 
 ;;; Installation
 
-;; From `MELPA':
+;; From MELPA:
 ;;
 ;; M-x package-install RET py-test RET
 
 ;; Manually:
+
+;; Clone the repo:
+;;
+;; git clone https://github.com/Bogdanp/py-test.el ~/sandbox/py-test.el
+
+;; Add it to your `.emacs`:
+;;
+;; (add-to-list 'load-path (expand-file-name "~/sandbox/py-test.el"))
+;; (require 'py-test)
 
 ;;; Usage
 
