@@ -34,6 +34,48 @@
 
 ;;; Commentary:
 
+;; Py-test gives you the ability to define testing projects and, based
+;; on those projects, run a single test that's defined in the current
+;; buffer, all of the tests that you have defined in the current buffer,
+;; or all of the tests that you have defined in the current buffers's
+;; parent directory.
+
+;;; Installation
+
+;; From `MELPA':
+;;
+;; M-x package-install RET py-test RET
+
+;; Manually:
+
+
+;;; Usage
+
+;; Define a project.
+;;
+;; (py-test/define-project
+;;  :name "My Project"
+;;  :python-command "python"
+;;  :base-directory (expand-file-name "~/sandbox/my-project-home/")
+;;  :test-runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
+;;  :working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
+
+;; Open a file belonging to that project:
+;;
+;; (find-file "~/sandbox/my-project-home/tests/subfolder/test_something.py")
+
+;; Run all of the tests that were defined in that file:
+;;
+;; M-x py-test/run-file RET
+
+;; Run all of the tests that were defined in that file's parent directory:
+;;
+;; M-x py-test/run-folder RET
+
+;; Jump to a single test function, method or class and run just that:
+;;
+;; M-x py-test/run-test-at-point RET
+
 ;;; Code:
 
 (require 'dash)
@@ -142,6 +184,7 @@ If the project already exists, update it."
     (compile (string-join (append command project-test-runner-arguments args) " "))))
 
 
+;;;###autoload
 (defun py-test/run-folder ()
   "Run all the tests in the current folder."
   (interactive)
@@ -150,6 +193,7 @@ If the project already exists, update it."
          (directory (f-dirname filename)))
     (py-test/run-project project directory)))
 
+;;;###autoload
 (defun py-test/run-file ()
   "Run all the tests in the current file."
   (interactive)
@@ -157,6 +201,7 @@ If the project already exists, update it."
          (project (py-test/project-for-filename filename)))
     (py-test/run-project project filename)))
 
+;;;###autoload
 (defun py-test/run-test-at-point ()
   "Run the test at point."
   (interactive)

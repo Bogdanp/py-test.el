@@ -1,34 +1,61 @@
 # py-test
 
-A simple test runner for Python code.
+`py-test` gives you the ability to define testing projects and, based
+on those projects, run a single test that's defined in the current
+buffer, all of the tests that you have defined in the current buffer, or
+all of the tests that you have defined in the current buffers's parent
+directory.
 
-# Setup
+# Installation
 
-Clone the repo.
+## From MELPA
+
+    M-x package-install RET py-test RET
+
+## Manual
+
+Clone the repo:
 
 ```sh
-git clone https://github.com/Bogdanp/py-test.el ~/py-test.el
+git clone https://github.com/Bogdanp/py-test.el ~/sandbox/py-test.el
 ```
 
-Add `py-test` to your `.emacs`.
+Add it to your `.emacs`:
 
 ```lisp
-(add-to-list 'load-path (expand-file-name "~/py-test.el"))
+(add-to-list 'load-path (expand-file-name "~/sandbox/py-test.el"))
+
 (require 'py-test)
 ```
+
+# Usage
 
 Define a project.
 
 ```lisp
 (py-test/define-project
- :name "My Project"
- :base-directory (expand-file-name "~/sandbox/my-project-home/")
- :python-command "python"
- :test-runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
- :working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
+:name "My Project"
+:python-command "python"
+:base-directory (expand-file-name "~/sandbox/my-project-home/")
+:test-runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
+:working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
 ```
 
-You're done! You can now use `M-x py-test/run-file RET`,
-`M-x py-test/run-folder RET` and `M-x py-test/run-test-at-point` to run
-your tests. Read the manual for `compilation-mode` to find out how to
-navigate through failed tests.
+Open a file belonging to that project:
+
+```lisp
+(find-file "~/sandbox/my-project-home/tests/subfolder/test_something.py")
+```
+
+Run all of the tests that were defined in that file:
+
+    M-x py-test/run-file RET
+
+Run all of the tests that were defined in that file's parent directory
+(in this example, that would mean `subfolder`):
+
+    M-x py-test/run-folder RET
+
+Jump to a single test function, method or class and run just that:
+
+    M-x py-test/run-test-at-point RET
