@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
 ;; Author: Bogdan Paul Popa <popa.bogdanp@gmail.com>
-;; Version: 0.4.0
+;; Version: 0.4.1
 ;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24"))
 ;; Keywords: python testing py.test
 ;; URL: https://github.com/Bogdanp/py-test.el
@@ -118,7 +118,7 @@ If the project already exists, update it."
            (name (buffer-substring-no-properties (match-beginning 3) (match-end 3)))
            (is-method (> (length indentation) 0)))
       (if is-method
-          `(,@(py-test/find-outer-test) ,name)
+          (list (py-test/find-outer-test-class) name)
         (list name)))))
 
 (defun py-test/run-project (project &rest args)
