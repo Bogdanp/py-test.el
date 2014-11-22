@@ -39,39 +39,46 @@
 (require 'dash)
 (require 'f)
 
+(defvar py-test/*default-buffer-name* "*py-test*"
+  "The default name to use when creating a new compilation buffer.")
+
 (defvar py-test/*default-test-runner* "py.test"
   "The test runner to use when one isn't provided by the project.")
 
 (defvar py-test/*test-path-separator* "::"
   "The separator to use when generating paths to individual tests. In
-py.test this is '::'.")
+py.test this is \"::\".")
 
 (defvar py-test/*projects* nil
   "The list of projects.
 
 This is a property list with the following properties:
 
-`name`
+`name'
   The project's name.
 
-`base-directory`
+`base-directory'
   The project's base directory.
 
-`python-command`
+`python-command'
   The Python command to use when running the runner. May be nil if the
   test-runner is executable.
 
-`test-runner`
+`test-runner'
   The path to the test runner to use. This can be nil, in which case
-  py-test/*default-test-runner* will be used.
+  `py-test/*default-test-runner*' will be used.
 
-`test-runner-arguments`
+`test-runner-arguments'
   A list of command-line arguments that should always get passed to the
   runner.
 
-`working-directory`
+`working-directory'
   The directory in which to run the tests. This can be nil, in which
-  case the current buffer's CWD will be used.")
+  case the current buffer's CWD will be used.
+
+`compilation-buffer-name'
+  The name of the buffer to use when running `compile'. Defaults to
+  `py-test/*default-buffer-name*'.")
 
 (defun py-test/define-project (&rest args)
   "Define a new project with ARGS.
@@ -120,11 +127,17 @@ If the project already exists, update it."
          (project-test-runner (plist-get project :test-runner))
          (project-test-runner-arguments (plist-get project :test-runner-arguments))
          (project-working-directory (plist-get project :working-directory))
+         (project-compilation-buffer-name (plist-get project :compilation-buffer-name))
 
          (python-command (or project-python-command ""))
          (test-runner (or project-test-runner py-test/*default-test-runner*))
          (command (list python-command test-runner))
-         (default-directory (or project-working-directory default-directory)))
+         (default-directory (or project-working-directory default-directory))
+
+         (compilation-buffer-name-function
+          (lambda (_)
+            (or project-compilation-buffer-name
+                py-test/*default-buffer-name*))))
 
     (compile (string-join (append command project-test-runner-arguments args) " "))))
 
