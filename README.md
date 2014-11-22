@@ -43,16 +43,16 @@ Define a project.
 
 Open a file belonging to that project:
 
-    C-x C-f ~/sandbox/my-project-home/tests/subfolder/test_something.py RET
+    C-x C-f ~/sandbox/my-project-home/tests/subdirectory/test_something.py RET
 
 Run all of the tests that were defined in that file:
 
     M-x py-test-run-file RET
 
 Run all of the tests that were defined in that file's parent directory
-(in this example, that would mean `subfolder`):
+(in this example, that would mean `subdirectory`):
 
-    M-x py-test-run-folder RET
+    M-x py-test-run-directory RET
 
 Jump to a single test function, method or class and run just that:
 

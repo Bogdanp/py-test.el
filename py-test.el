@@ -70,7 +70,7 @@
 
 ;; Open a file belonging to that project:
 ;;
-;; C-x C-f ~/sandbox/my-project-home/tests/subfolder/test_something.py RET
+;; C-x C-f ~/sandbox/my-project-home/tests/subdirectory/test_something.py RET
 
 ;; Run all of the tests that were defined in that file:
 ;;
@@ -78,7 +78,7 @@
 
 ;; Run all of the tests that were defined in that file's parent directory:
 ;;
-;; M-x py-test-run-folder RET
+;; M-x py-test-run-directory RET
 
 ;; Jump to a single test function, method or class and run just that:
 ;;
@@ -193,8 +193,8 @@ If the project already exists, update it."
 
 
 ;;;###autoload
-(defun py-test-run-folder ()
-  "Run all the tests in the current folder."
+(defun py-test-run-directory ()
+  "Run all the tests in the current directory."
   (interactive)
   (let* ((filename (buffer-file-name))
          (project (py-test-project-for-filename filename))
