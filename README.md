@@ -28,6 +28,7 @@ Define a project.
  :working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
 ```
 
-You're done! You can now use `M-x py-test/run-file RET` and
-`M-x py-test/run-folder RET` to run your tests. Read the manual for
-`compilation-mode` to find out how to navigate through failed tests.
+You're done! You can now use `M-x py-test/run-file RET`,
+`M-x py-test/run-folder RET` and `M-x py-test/run-test-at-point` to run
+your tests. Read the manual for `compilation-mode` to find out how to
+navigate through failed tests.
