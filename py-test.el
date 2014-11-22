@@ -61,7 +61,7 @@
 
 ;; Define a project.
 ;;
-;; (py-test/define-project
+;; (py-test-define-project
 ;;  :name "My Project"
 ;;  :python-command "python"
 ;;  :base-directory (expand-file-name "~/sandbox/my-project-home/")
@@ -74,32 +74,32 @@
 
 ;; Run all of the tests that were defined in that file:
 ;;
-;; M-x py-test/run-file RET
+;; M-x py-test-run-file RET
 
 ;; Run all of the tests that were defined in that file's parent directory:
 ;;
-;; M-x py-test/run-folder RET
+;; M-x py-test-run-folder RET
 
 ;; Jump to a single test function, method or class and run just that:
 ;;
-;; M-x py-test/run-test-at-point RET
+;; M-x py-test-run-test-at-point RET
 
 ;;; Code:
 
 (require 'dash)
 (require 'f)
 
-(defvar py-test/*default-buffer-name* "*py-test*"
+(defvar py-test-*default-buffer-name* "*py-test*"
   "The default name to use when creating a new compilation buffer.")
 
-(defvar py-test/*default-test-runner* "py.test"
+(defvar py-test-*default-test-runner* "py.test"
   "The test runner to use when one isn't provided by the project.")
 
-(defvar py-test/*test-path-separator* "::"
+(defvar py-test-*test-path-separator* "::"
   "The separator to use when generating paths to individual tests. In
 py.test this is \"::\".")
 
-(defvar py-test/*projects* nil
+(defvar py-test-*projects* nil
   "The list of projects.
 
 This is a property list with the following properties:
@@ -116,7 +116,7 @@ This is a property list with the following properties:
 
 `test-runner'
   The path to the test runner to use. This can be nil, in which case
-  `py-test/*default-test-runner*' will be used.
+  `py-test-*default-test-runner*' will be used.
 
 `test-runner-arguments'
   A list of command-line arguments that should always get passed to the
@@ -128,38 +128,38 @@ This is a property list with the following properties:
 
 `compilation-buffer-name'
   The name of the buffer to use when running `compile'. Defaults to
-  `py-test/*default-buffer-name*'.")
+  `py-test-*default-buffer-name*'.")
 
-(defun py-test/define-project (&rest args)
+(defun py-test-define-project (&rest args)
   "Define a new project with ARGS.
 
 If the project already exists, update it."
   (let* ((project-name (plist-get args :name))
          (finder (lambda (project)
                    (string= (plist-get project :name) project-name)))
-         (project (-first finder py-test/*projects*)))
+         (project (-first finder py-test-*projects*)))
 
     (when project
       ;; Remove the project so it can be re-added.
-      (setq py-test/*projects* (-reject finder py-test/*projects*)))
+      (setq py-test-*projects* (-reject finder py-test-*projects*)))
 
-    (push args py-test/*projects*)))
+    (push args py-test-*projects*)))
 
-(defun py-test/project-for-filename (filename)
+(defun py-test-project-for-filename (filename)
   "Find the first project whose base-directory is a parent of FILENAME."
   (let ((finder
          (lambda (project)
            (string-match (concat "^" (plist-get project :base-directory))
                          filename))))
-    (-first finder py-test/*projects*)))
+    (-first finder py-test-*projects*)))
 
-(defun py-test/find-outer-test-class ()
+(defun py-test-find-outer-test-class ()
   "Searches backward for the first class definition of the form 'class.*T.*('."
   (save-excursion
     (re-search-backward "^ *class +\\(Test[^(]*\\)" nil t)
     (buffer-substring-no-properties (match-beginning 1) (match-end 1))))
 
-(defun py-test/find-outer-test ()
+(defun py-test-find-outer-test ()
   "Searches backward for the current test."
   (save-excursion
     (re-search-backward "^\\( *\\)\\(class\\|def\\) +\\([Tt]est[^(]*\\)" nil t)
@@ -168,10 +168,10 @@ If the project already exists, update it."
            (name (buffer-substring-no-properties (match-beginning 3) (match-end 3)))
            (is-method (> (length indentation) 0)))
       (if is-method
-          (list (py-test/find-outer-test-class) name)
+          (list (py-test-find-outer-test-class) name)
         (list name)))))
 
-(defun py-test/run-project (project &rest args)
+(defun py-test-run-project (project &rest args)
   "'Compiles' the runner for PROJECT with ARGS."
   (let* ((project-python-command (plist-get project :python-command))
          (project-test-runner (plist-get project :test-runner))
@@ -180,44 +180,44 @@ If the project already exists, update it."
          (project-compilation-buffer-name (plist-get project :compilation-buffer-name))
 
          (python-command (or project-python-command ""))
-         (test-runner (or project-test-runner py-test/*default-test-runner*))
+         (test-runner (or project-test-runner py-test-*default-test-runner*))
          (command (list python-command test-runner))
          (default-directory (or project-working-directory default-directory))
 
          (compilation-buffer-name-function
           (lambda (_)
             (or project-compilation-buffer-name
-                py-test/*default-buffer-name*))))
+                py-test-*default-buffer-name*))))
 
     (compile (string-join (append command project-test-runner-arguments args) " "))))
 
 
 ;;;###autoload
-(defun py-test/run-folder ()
+(defun py-test-run-folder ()
   "Run all the tests in the current folder."
   (interactive)
   (let* ((filename (buffer-file-name))
-         (project (py-test/project-for-filename filename))
+         (project (py-test-project-for-filename filename))
          (directory (f-dirname filename)))
-    (py-test/run-project project directory)))
+    (py-test-run-project project directory)))
 
 ;;;###autoload
-(defun py-test/run-file ()
+(defun py-test-run-file ()
   "Run all the tests in the current file."
   (interactive)
   (let* ((filename (buffer-file-name))
-         (project (py-test/project-for-filename filename)))
-    (py-test/run-project project filename)))
+         (project (py-test-project-for-filename filename)))
+    (py-test-run-project project filename)))
 
 ;;;###autoload
-(defun py-test/run-test-at-point ()
+(defun py-test-run-test-at-point ()
   "Run the test at point."
   (interactive)
   (let* ((filename (buffer-file-name))
-         (project (py-test/project-for-filename filename))
-         (test-path (string-join (cons filename (py-test/find-outer-test))
-                                 py-test/*test-path-separator*)))
-    (py-test/run-project project test-path)))
+         (project (py-test-project-for-filename filename))
+         (test-path (string-join (cons filename (py-test-find-outer-test))
+                                 py-test-*test-path-separator*)))
+    (py-test-run-project project test-path)))
 
 
 (provide 'py-test)

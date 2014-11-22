@@ -33,7 +33,7 @@ Add it to your `.emacs`:
 Define a project.
 
 ```lisp
-(py-test/define-project
+(py-test-define-project
 :name "My Project"
 :python-command "python"
 :base-directory (expand-file-name "~/sandbox/my-project-home/")
@@ -47,13 +47,13 @@ Open a file belonging to that project:
 
 Run all of the tests that were defined in that file:
 
-    M-x py-test/run-file RET
+    M-x py-test-run-file RET
 
 Run all of the tests that were defined in that file's parent directory
 (in this example, that would mean `subfolder`):
 
-    M-x py-test/run-folder RET
+    M-x py-test-run-folder RET
 
 Jump to a single test function, method or class and run just that:
 
-    M-x py-test/run-test-at-point RET
+    M-x py-test-run-test-at-point RET
