@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
 ;; Author: Bogdan Paul Popa <popa.bogdanp@gmail.com>
-;; Version: 0.2.0
+;; Version: 0.3.0
 ;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24"))
 ;; Keywords: python testing py.test
 ;; URL: https://github.com/Bogdanp/py-test.el
