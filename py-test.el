@@ -39,6 +39,13 @@
 (require 'dash)
 (require 'f)
 
+(defvar py-test/*default-test-runner* "py.test"
+  "The test runner to use when one isn't provided by the project.")
+
+(defvar py-test/*test-path-separator* "::"
+  "The separator to use when generating paths to individual tests. In
+py.test this is '::'.")
+
 (defvar py-test/*projects* nil
   "The list of projects.
 
@@ -56,7 +63,7 @@ This is a property list with the following properties:
 
 `test-runner`
   The path to the test runner to use. This can be nil, in which case
-  py.test will be used.
+  py-test/*default-test-runner* will be used.
 
 `test-runner-arguments`
   A list of command-line arguments that should always get passed to the
@@ -89,6 +96,25 @@ If the project already exists, update it."
                          filename))))
     (-first finder py-test/*projects*)))
 
+(defun py-test/find-outer-test-class ()
+  "Searches backward for the first class definition of the form 'class.*T.*('."
+  (save-excursion
+    (re-search-backward "^ *class +\\(Test[^(]*\\)" nil t)
+    (buffer-substring-no-properties (match-beginning 1) (match-end 1))))
+
+(defun py-test/find-outer-test ()
+  "Searches backward for the current test."
+  (save-excursion
+    (end-of-line)
+    (re-search-backward "^\\( *\\)\\(class\\|def\\) +\\([Tt]est[^(]*\\)" nil t)
+    (let* ((indentation (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
+           (abstraction (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
+           (name (buffer-substring-no-properties (match-beginning 3) (match-end 3)))
+           (is-method (> (length indentation) 0)))
+      (if is-method
+          `(,@(py-test/find-outer-test) ,name)
+        (list name)))))
+
 (defun py-test/run-project (project &rest args)
   "'Compiles' the runner for PROJECT with ARGS."
   (let* ((project-python-command (plist-get project :python-command))
@@ -97,11 +123,12 @@ If the project already exists, update it."
          (project-working-directory (plist-get project :working-directory))
 
          (python-command (or project-python-command ""))
-         (test-runner (or project-test-runner "py.test"))
+         (test-runner (or project-test-runner py-test/*default-test-runner*))
          (command (list python-command test-runner))
          (default-directory (or project-working-directory default-directory)))
 
     (compile (string-join (append command project-test-runner-arguments args) " "))))
+
 
 (defun py-test/run-folder ()
   "Run all the tests in the current folder."
@@ -117,6 +144,15 @@ If the project already exists, update it."
   (let* ((filename (buffer-file-name))
          (project (py-test/project-for-filename filename)))
     (py-test/run-project project filename)))
+
+(defun py-test/run-test-at-point ()
+  "Run the test at point."
+  (interactive)
+  (let* ((filename (buffer-file-name))
+         (project (py-test/project-for-filename filename))
+         (test-path (string-join (cons filename (py-test/find-outer-test))
+                                 py-test/*test-path-separator*)))
+    (py-test/run-project project test-path)))
 
 
 (provide 'py-test)
