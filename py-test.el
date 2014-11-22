@@ -1,4 +1,4 @@
-;;; py-test.el --- A test runner for Python code.
+;;; py-test.el --- A test runner for Python code
 
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
@@ -47,7 +47,6 @@
 ;; M-x package-install RET py-test RET
 
 ;; Manually:
-
 
 ;;; Usage
 
