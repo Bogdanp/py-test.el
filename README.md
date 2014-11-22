@@ -34,11 +34,11 @@ Define a project.
 
 ```lisp
 (py-test-define-project
-:name "My Project"
-:python-command "python"
-:base-directory (expand-file-name "~/sandbox/my-project-home/")
-:test-runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
-:working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
+ :name "My Project"
+ :python-command "python"
+ :base-directory (expand-file-name "~/sandbox/my-project-home/")
+ :test-runner (expand-file-name "~/sandbox/my-project-home/tests/runner.py")
+ :working-directory (expand-file-name "~/sandbox/my-project-home/tests/"))
 ```
 
 Open a file belonging to that project:
