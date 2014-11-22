@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
 ;; Author: Bogdan Paul Popa <popa.bogdanp@gmail.com>
-;; Version: 0.4.1
+;; Version: 0.5.0
 ;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24"))
 ;; Keywords: python testing py.test
 ;; URL: https://github.com/Bogdanp/py-test.el
@@ -138,11 +138,8 @@ If the project already exists, update it."
          (finder (lambda (project)
                    (string= (plist-get project :name) project-name)))
          (project (-first finder py-test-*projects*)))
-
     (when project
-      ;; Remove the project so it can be re-added.
       (setq py-test-*projects* (-reject finder py-test-*projects*)))
-
     (push args py-test-*projects*)))
 
 (defun py-test-project-for-filename (filename)
