@@ -62,7 +62,7 @@
 
 ;; Open a file belonging to that project:
 ;;
-;; (find-file "~/sandbox/my-project-home/tests/subfolder/test_something.py")
+;; C-x C-f ~/sandbox/my-project-home/tests/subfolder/test_something.py RET
 
 ;; Run all of the tests that were defined in that file:
 ;;
