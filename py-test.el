@@ -34,7 +34,7 @@
 
 ;;; Commentary:
 
-;; Py-test gives you the ability to define testing projects and, based
+;; py-test gives you the ability to define testing projects and, based
 ;; on those projects, run a single test that's defined in the current
 ;; buffer, all of the tests that you have defined in the current buffer,
 ;; or all of the tests that you have defined in the current buffers's
