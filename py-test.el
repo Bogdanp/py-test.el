@@ -151,13 +151,13 @@ If the project already exists, update it."
     (-first finder py-test-*projects*)))
 
 (defun py-test-find-outer-test-class ()
-  "Searches backward for the first class definition of the form 'class.*T.*('."
+  "Searches backward for the current test class definition."
   (save-excursion
     (re-search-backward "^ *class +\\(Test[^(]*\\)" nil t)
     (buffer-substring-no-properties (match-beginning 1) (match-end 1))))
 
 (defun py-test-find-outer-test ()
-  "Searches backward for the current test."
+  "Searches backward for the current test definition."
   (save-excursion
     (re-search-backward "^\\( *\\)\\(class\\|def\\) +\\([Tt]est[^(]*\\)" nil t)
     (let* ((indentation (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
