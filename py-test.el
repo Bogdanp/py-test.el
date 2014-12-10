@@ -89,6 +89,80 @@
 (require 'dash)
 (require 'f)
 
+(defvar py-test-*mode-line-face-shenanigans-on* nil
+  "When this is non-nil, `py-test' will colorize the mode-line based on
+whether or not the tests are failing.")
+
+(defvar py-test-*mode-line-face-shenanigans-timer* "5 sec"
+  "When this is non-nil, the mode-line face will be restored after
+whatever relative time is specified by this variable. Note that the
+mode-line face is only restored when the tests are passing.")
+
+(defvar py-test--*mode-line-face-cookie* nil
+  "Holds a cookie that can be used to restore the original mode-line
+face.")
+
+(defvar py-test--*mode-line-inactive-face-cookie* nil
+  "Holds a cookie that can be used to restore the original
+mode-line-inactive face.")
+
+(defface py-test-*mode-line-green-face*
+  '((t :background "#81af34" :foreground "#1a2321"))
+  "The mode line when tests are passing."
+  :group 'py-test-faces)
+
+(defface py-test-*mode-line-inactive-green-face*
+  '((t :background "#1a2321" :foreground "#81af34"))
+  "The mode line when tests are passing."
+  :group 'py-test-faces)
+
+(defface py-test-*mode-line-red-face*
+  '((t :background "#d15120" :foreground "#2a1f1f"))
+  "The mode line when tests are failing."
+  :group 'py-test-faces)
+
+(defface py-test-*mode-line-inactive-red-face*
+  '((t :background "#251c1e" :foreground "#b23f1e"))
+  "The mode line when tests are failing."
+  :group 'py-test-faces)
+
+(defun py-test--restore-mode-line-face ()
+  "Restores the old mode-line face."
+  (when py-test--*mode-line-face-cookie*
+    (face-remap-remove-relative py-test--*mode-line-face-cookie*)
+    (face-remap-remove-relative py-test--*mode-line-inactive-face-cookie*)
+    (setq py-test--*mode-line-face-cookie* nil)
+    (setq py-test--*mode-line-inactive-face-cookie* nil)))
+
+(defun py-test--set-green-mode-line-face ()
+  "Turns the mode-line green."
+  (py-test--restore-mode-line-face)
+  (setq py-test--*mode-line-face-cookie*
+        (face-remap-add-relative 'mode-line
+                                 'py-test-*mode-line-green-face*))
+  (setq py-test--*mode-line-inactive-face-cookie*
+        (face-remap-add-relative 'mode-line-inactive
+                                 'py-test-*mode-line-inactive-green-face*)))
+
+(defun py-test--set-red-mode-line-face ()
+  "Turns the mode-line red."
+  (py-test--restore-mode-line-face)
+  (setq py-test--*mode-line-face-cookie*
+        (face-remap-add-relative 'mode-line
+                                 'py-test-*mode-line-red-face*))
+  (setq py-test--*mode-line-inactive-face-cookie*
+        (face-remap-add-relative 'mode-line-inactive
+                                 'py-test-*mode-line-inactive-red-face*)))
+
+(defun py-test--mode-line-sentinel (proc msg)
+  "Changes the mode-line face on PROC exit."
+  (if (/= 0 (process-exit-status proc))
+      (py-test--set-red-mode-line-face)
+    (py-test--set-green-mode-line-face)
+    (when py-test-*mode-line-face-shenanigans-timer*
+      (run-at-time py-test-*mode-line-face-shenanigans-timer* nil
+                   #'py-test--restore-mode-line-face))))
+
 (defvar py-test-*default-buffer-name* "*py-test*"
   "The default name to use when creating a new compilation buffer.")
 
@@ -184,9 +258,16 @@ If the project already exists, update it."
          (compilation-buffer-name-function
           (lambda (_)
             (or project-compilation-buffer-name
-                py-test-*default-buffer-name*))))
+                py-test-*default-buffer-name*)))
 
-    (compile (string-join (append command project-test-runner-arguments args) " "))))
+         (final-command (string-join (append command project-test-runner-arguments args) " "))
+         (compile-buffer (compile final-command)))
+
+    (when py-test-*mode-line-face-shenanigans-on*
+      (set-process-sentinel (get-buffer-process compile-buffer)
+                            #'py-test--mode-line-sentinel))
+
+    compile-buffer))
 
 
 ;;;###autoload
