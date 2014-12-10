@@ -84,6 +84,24 @@
 ;;
 ;; M-x py-test-run-test-at-point RET
 
+;;; Extras
+
+;; `py-test' is also configurable through the following variables (use
+;; `describe-variable' for more info):
+;;
+;;   * py-test-*mode-line-face-shenanigans-on*
+;;   * py-test-*mode-line-face-shenanigans-timer*
+;;   * py-test-*default-buffer-name*
+;;   * py-test-*default-test-runner*
+;;   * py-test-*test-path-separator*
+
+;; `py-test' also defines the following faces:
+;;
+;;   * py-test-*mode-line-green-face*
+;;   * py-test-*mode-line-inactive-green-face*
+;;   * py-test-*mode-line-red-face*
+;;   * py-test-*mode-line-inactive-red-face*
+
 ;;; Code:
 
 (require 'dash)
