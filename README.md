@@ -69,7 +69,7 @@ Jump to a single test function, method or class and run just that:
   * `py-test-*default-test-runner*`
   * `py-test-*test-path-separator*`
 
-`py-test` also defines the following faces:
+In addition, `py-test` defines the following faces:
 
   * `py-test-*mode-line-green-face*`
   * `py-test-*mode-line-inactive-green-face*`

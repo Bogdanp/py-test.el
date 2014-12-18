@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014 Bogdan Paul Popa
 
 ;; Author: Bogdan Paul Popa <popa.bogdanp@gmail.com>
-;; Version: 0.6.0
+;; Version: 0.6.1
 ;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24"))
 ;; Keywords: python testing py.test
 ;; URL: https://github.com/Bogdanp/py-test.el
@@ -95,7 +95,7 @@
 ;;   * py-test-*default-test-runner*
 ;;   * py-test-*test-path-separator*
 
-;; `py-test' also defines the following faces:
+;; In addition, `py-test' defines the following faces:
 ;;
 ;;   * py-test-*mode-line-green-face*
 ;;   * py-test-*mode-line-inactive-green-face*
@@ -106,6 +106,9 @@
 
 (require 'dash)
 (require 'f)
+
+(defvar py-test--*last-buffer* nil
+  "Holds the last buffer that the tests were run from.")
 
 (defvar py-test-*mode-line-face-shenanigans-on* nil
   "When this is non-nil, `py-test' will colorize the mode-line based on
@@ -144,13 +147,25 @@ mode-line-inactive face.")
   "The mode line when tests are failing."
   :group 'py-test-faces)
 
+(defmacro py-test--with-last-buffer (&rest args)
+  "Runs ARGS forms sequentially inside of the buffer that the tests
+were run from."
+  `(with-current-buffer py-test--*last-buffer*
+     (save-excursion
+       ,@args)))
+
 (defun py-test--restore-mode-line-face ()
   "Restores the old mode-line face."
   (when py-test--*mode-line-face-cookie*
     (face-remap-remove-relative py-test--*mode-line-face-cookie*)
-    (face-remap-remove-relative py-test--*mode-line-inactive-face-cookie*)
-    (setq py-test--*mode-line-face-cookie* nil)
-    (setq py-test--*mode-line-inactive-face-cookie* nil)))
+    (face-remap-remove-relative py-test--*mode-line-inactive-face-cookie*)))
+
+(defun py-test--restore-mode-line-face-last-buffer ()
+  "Restores the old mode-line face in the buffer that the tests were
+run from."
+  (py-test--with-last-buffer
+   (py-test--restore-mode-line-face)))
+
 
 (defun py-test--set-green-mode-line-face ()
   "Turns the mode-line green."
@@ -174,12 +189,13 @@ mode-line-inactive face.")
 
 (defun py-test--mode-line-sentinel (proc msg)
   "Changes the mode-line face on PROC exit."
-  (if (/= 0 (process-exit-status proc))
-      (py-test--set-red-mode-line-face)
-    (py-test--set-green-mode-line-face)
-    (when py-test-*mode-line-face-shenanigans-timer*
-      (run-at-time py-test-*mode-line-face-shenanigans-timer* nil
-                   #'py-test--restore-mode-line-face))))
+  (py-test--with-last-buffer
+   (if (/= 0 (process-exit-status proc))
+       (py-test--set-red-mode-line-face)
+     (py-test--set-green-mode-line-face)
+     (when py-test-*mode-line-face-shenanigans-timer*
+       (run-at-time py-test-*mode-line-face-shenanigans-timer* nil
+                    #'py-test--restore-mode-line-face-last-buffer)))))
 
 (defvar py-test-*default-buffer-name* "*py-test*"
   "The default name to use when creating a new compilation buffer.")
@@ -262,6 +278,8 @@ If the project already exists, update it."
 
 (defun py-test-run-project (project &rest args)
   "'Compiles' the runner for PROJECT with ARGS."
+  (setq py-test--*last-buffer* (current-buffer))
+
   (let* ((project-python-command (plist-get project :python-command))
          (project-test-runner (plist-get project :test-runner))
          (project-test-runner-arguments (plist-get project :test-runner-arguments))
