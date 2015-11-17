@@ -4,7 +4,7 @@
 
 ;; Author: Bogdan Paul Popa <popa.bogdanp@gmail.com>
 ;; Version: 0.6.1
-;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24"))
+;; Package-Requires: ((dash "2.9.0") (f "0.17") (emacs "24.4"))
 ;; Keywords: python testing py.test
 ;; URL: https://github.com/Bogdanp/py-test.el
 
@@ -106,6 +106,8 @@
 
 (require 'dash)
 (require 'f)
+(require 'subr-x)
+(require 'face-remap)
 
 (defvar py-test--*last-buffer* nil
   "Holds the last buffer that the tests were run from.")
