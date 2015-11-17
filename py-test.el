@@ -107,6 +107,7 @@
 (require 'dash)
 (require 'f)
 (require 'subr-x)
+(require 'face-remap)
 
 (defvar py-test--*last-buffer* nil
   "Holds the last buffer that the tests were run from.")
