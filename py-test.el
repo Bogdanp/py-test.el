@@ -202,7 +202,7 @@ run from."
 (defvar py-test-*default-buffer-name* "*py-test*"
   "The default name to use when creating a new compilation buffer.")
 
-(defvar py-test-*default-test-runner* "py.test"
+(defvar py-test-*default-test-runner* "pytest"
   "The test runner to use when one isn't provided by the project.")
 
 (defvar py-test-*test-path-separator* "::"
@@ -263,19 +263,19 @@ If the project already exists, update it."
 (defun py-test-find-outer-test-class ()
   "Searches backward for the current test class definition."
   (save-excursion
-    (re-search-backward "^ *class +\\(Test[^(]*\\)" nil t)
+    (re-search-backward "^ *class +\\(Test[^(:]*\\)" nil t)
     (buffer-substring-no-properties (match-beginning 1) (match-end 1))))
 
 (defun py-test-find-outer-test ()
   "Searches backward for the current test definition."
   (save-excursion
-    (re-search-backward "^\\( *\\)\\(class\\|def\\) +\\([Tt]est[^(]*\\)" nil t)
+    (re-search-backward "^\\( *\\)\\(class\\|def\\) +\\([Tt]est[^(:]*\\)" nil t)
     (let* ((indentation (buffer-substring-no-properties (match-beginning 1) (match-end 1)))
            (abstraction (buffer-substring-no-properties (match-beginning 2) (match-end 2)))
            (name (buffer-substring-no-properties (match-beginning 3) (match-end 3)))
            (is-method (> (length indentation) 0)))
       (if is-method
-          (list (py-test-find-outer-test-class) name)
+          (list (string-trim-right (py-test-find-outer-test-class)) name)
         (list name)))))
 
 (defun py-test-run-project (project &rest args)
